@@ -1,0 +1,53 @@
+version: 2.1
+
+executors:
+  python:
+    docker:
+      - image: circleci/python
+
+jobs:
+  tweet:
+    executor: python
+    steps:
+      - run:
+          name: Install Ansible
+          command: |
+            sudo pip install ansible
+      - run:
+          name: Install tweepy
+          command: |
+            sudo pip install tweepy
+      - run:
+          name: Install jq
+          command: |
+            sudo apt -y install jq
+      - checkout
+      - run:
+          name: Create message body 
+          command: | 
+            bash create-message-body.sh
+      - run:
+          name: Tweet
+          command: |
+            python tweet.py \
+            ${CONSUMER_KEY} \
+            ${CONSUMER_SECRET_KEY} \
+            ${ACCESS_TOKEN} \
+            ${ACCESS_TOKEN_SECRET}
+
+workflows:
+  version: 2
+  tweet:
+    jobs:
+      - tweet 
+  crontweet:
+    triggers:
+      - schedule:
+          cron: "25 * * * *"
+          filters:
+            branches:
+              only:
+                - test
+    jobs:
+      - tweet 
+  
