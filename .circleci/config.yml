@@ -23,8 +23,8 @@ jobs:
             sudo apt -y install jq
       - checkout
       - run:
-          name: Create message body 
-          command: | 
+          name: Create message body
+          command: |
             bash create-message-body.sh
       - run:
           name: Tweet
@@ -39,15 +39,14 @@ workflows:
   version: 2
   tweet:
     jobs:
-      - tweet 
+      - tweet
   crontweet:
     triggers:
       - schedule:
-          cron: "25 * * * *"
+          cron: "0 7,12,17 * * *"
           filters:
             branches:
               only:
-                - test
+                - cron
     jobs:
-      - tweet 
-  
+      - tweet
